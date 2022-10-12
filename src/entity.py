@@ -1,9 +1,11 @@
-import pygame
 from animation import AnimateSprite
+import pygame
+import settings
+
 
 class Entity(AnimateSprite):
 
-    def __init__(self, name, x, y, has_a_portrait=False):
+    def __init__(self, name, x, y, width=32, height=32, portrait=False):
         super().__init__(name)
         # graphic setup
         self.image = self.get_image(32, 00)
@@ -12,19 +14,21 @@ class Entity(AnimateSprite):
 
         # movement & hitboxes
         self.position = [x, y]
-        self.feet = pygame.Rect(0, 0, self.rect.width * 0.5, 12)
+        self.hitbox = pygame.Rect(0, 0, self.rect.width * 0.5, 12)
         self.old_position = self.position.copy()
         self.direction = pygame.math.Vector2()
 
         # stats
-        self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 2}
+        self.stats = {
+            'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': 2
+        }
         self.health = self.stats['health']
         self.energy = self.stats['energy']
         self.exp = 123
         self.speed = self.stats['speed']
 
         # dialog
-        self.has_a_portrait = has_a_portrait
+        self.portrait = portrait
 
     def save_location(self): self.old_position = self.position.copy()
 
@@ -32,70 +36,100 @@ class Entity(AnimateSprite):
         if self.direction.magnitude() != 0:
             self.direction = self.direction.normalize()
 
-        self.position[0] += self.direction.x * self.speed
-        self.position[1] += self.direction.y * self.speed
-        if self.direction.x > 0: self.change_animation('right')
-        elif self.direction.x < 0: self.change_animation('left')
-        elif self.direction.y < 0: self.change_animation('up')
-        elif self.direction.y > 0: self.change_animation('down')
+        self.position[0] += self.direction.x * self.speed * settings.delta_time
+        self.position[1] += self.direction.y * self.speed * settings.delta_time
+
+        if self.direction.x > 0:
+            self.change_animation('right')
+        elif self.direction.x < 0:
+            self.change_animation('left')
+        elif self.direction.y < 0:
+            self.change_animation('up')
+        elif self.direction.y > 0:
+            self.change_animation('down')
+        # else:
+        #     self.change_animation(self.current_animation)
 
     def update(self):
         self.rect.topleft = self.position
-        self.feet.midbottom = self.rect.midbottom
+        self.hitbox.midbottom = self.rect.midbottom
+        # pygame.draw.rect(self.image, (255, 255, 255), pygame.Rect(self.rect.x, self.rect.y, self.hitbox.width, self.hitbox.height), 1, 8)
 
     def move_back(self):
         self.position = self.old_position
         self.rect.topleft = self.position
-        self.feet.midbottom = self.rect.midbottom
+        self.hitbox.midbottom = self.rect.midbottom
 
+    def draw_outline(self, wideness=1, color=(255, 255, 255)):
+        display = self.image
+        loc = (0, 0)
+        mask = pygame.mask.from_surface(self.image)
+        mask_outline = mask.outline()
+        n = 0
+        for point in mask_outline:
+            mask_outline[n] = (point[0] + loc[0], point[1] + loc[1])
+            n += 1
+        pygame.draw.polygon(display, color, mask_outline, wideness)
 
-    def get_player_distance_direction(self, player):
-        enemy_vec = pygame.math.Vector2(self.rect.center)
-        player_vec = pygame.math.Vector2(player.rect.center)
-        distance = (player_vec - enemy_vec).magnitude()
+    def get_distance_direction(self, target):
+        entity_vec = pygame.math.Vector2(self.rect.center)
+        target_vec = pygame.math.Vector2(target.rect.center)
+        distance = (target_vec - entity_vec).magnitude()
 
         if distance > 0:
-        	direction = (player_vec - enemy_vec).normalize()
+            direction = (target_vec - entity_vec).normalize()
         else:
-        	direction = pygame.math.Vector2()
+            direction = pygame.math.Vector2()
 
         return (distance, direction)
+
 
 class Player(Entity):
 
     def __init__(self):
-        super().__init__('player', 0, 0, has_a_portrait=False)
-        self.inventory = {
-            "coin": 0
-        }
+        super().__init__(
+            'player', 0, 0, width=32, height=32, portrait=False
+        )
+        self.inventory = [
+            {"type": "coin", "number": 1},
+            {"type": "oak_log", "number": 64},
+            {"type": "oak_log", "number": 64}
+        ]
+
 
 class Item(Entity):
-    def __init__(self, name, x, y, status):
-        super().__init__(name, x, y, has_a_portrait=False)
+    def __init__(self, x, y, status):
+        super().__init__("items", x, y)
         # graphic setup
+        self.width, self.height = 16, 16
         self.change_status(status)
         self.image = self.get_image(00, 00)
         self.image.set_colorkey([0, 0, 0])
 
-    def change_animation(self, name):
-        pass
+    def change_animation(self, name): pass
 
-    def move_back(self):
-        pass
+    def move_back(self): pass
 
     def give(self, player):
         pygame.mixer.Sound.play(pygame.mixer.Sound("../sounds/coin.ogg"))
-        if self.status in player.inventory:
-            player.inventory[self.status] += 1
-        else:
-            player.inventory[self.status] = 1
+
+        for i in range(0, len(player.inventory)):
+            if player.inventory[i]["type"] == self.status:
+                if player.inventory[i]["number"] < settings.default_max_stack:
+                    player.inventory[i]["number"] += 1
+                    break
+                # else:
+                #     continue
+            if i >= len(player.inventory) - 1:
+                player.inventory.append({"type": self.status, "number": 1})
+
         self.kill()
 
 
-
 class NPC(Entity):
-
-    def __init__(self, name, nb_points, dialog, speed=2, has_a_portrait=False):
+    def __init__(self, name, nb_points, width=32, height=32, dialog=[''],
+                 speed=2, portrait=False
+                 ):
         super().__init__(name, 0, 0)
         self.nb_points = nb_points
         self.dialog = dialog
@@ -104,17 +138,20 @@ class NPC(Entity):
         self.current_point = 0
 
         # stats
-        self.stats = {'health': 100, 'energy': 60, 'attack': 10, 'magic': 4, 'speed': speed}
+        self.stats = {
+            'health': 100, 'energy': 60, 'attack': 10, 'magic': 4,
+            'speed': speed
+        }
         self.health = self.stats['health']
         self.energy = self.stats['energy']
         self.exp = 123
         self.speed = self.stats['speed']
 
         # dialog
-        self.has_a_portrait = has_a_portrait
+        self.portrait = portrait
 
-
-    def move(self):
+    def move_to_next_point(self):
+        self.direction.x, self.direction.y = 0, 0
         current_point = self.current_point
         target_point = self.current_point + 1
 
@@ -124,23 +161,29 @@ class NPC(Entity):
         current_rect = self.points[current_point]
         target_rect = self.points[target_point]
 
-        if current_rect.y < target_rect.y and abs(current_rect.x - target_rect.x) < 3:
+        if current_rect.y < target_rect.y and abs(
+            current_rect.x - target_rect.x
+        ) < 3:
             self.direction.y = 1
-            self.position[1] += self.speed * self.direction.y
-            self.change_animation('down')
-        elif current_rect.y > target_rect.y and abs(current_rect.x - target_rect.x) < 3:
-            self.direction.y = -1
-            self.position[1] += self.speed * self.direction.y
-            self.change_animation('up')
-        if current_rect.x > target_rect.x and abs(current_rect.y - target_rect.y) < 3:
-            self.direction.x = -1
-            self.position[0] += self.speed * self.direction.x
-            self.change_animation('left')
-        elif current_rect.x < target_rect.x and abs(current_rect.y - target_rect.y) < 3:
-            self.direction.x = 1
-            self.position[0] += self.speed * self.direction.x
-            self.change_animation('right')
+            self.move()
 
+        elif current_rect.y > target_rect.y and abs(
+            current_rect.x - target_rect.x
+        ) < 3:
+            self.direction.y = -1
+            self.move()
+
+        if current_rect.x > target_rect.x and abs(
+            current_rect.y - target_rect.y
+        ) < 3:
+            self.direction.x = -1
+            self.move()
+
+        elif current_rect.x < target_rect.x and abs(
+            current_rect.y - target_rect.y
+        ) < 3:
+            self.direction.x = 1
+            self.move()
         if self.rect.colliderect(target_rect):
             self.current_point = target_point
 
