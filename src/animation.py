@@ -3,9 +3,11 @@ import pygame
 
 class AnimateSprite(pygame.sprite.Sprite):
 
-    def __init__(self, name):
+    def __init__(self, name, speed=2):
         super().__init__()
-        self.sprite_sheet = pygame.image.load(f'..\sprites\{name}.png')
+        self.sprite_sheet = pygame.image.load(f'..\images\sprites\{name}\spritesheet.png').convert_alpha()
+        self.status = "spritesheet"
+        self.name = name
         self.animation_index = 0
         self.clock = 0
         self.images = {
@@ -14,8 +16,11 @@ class AnimateSprite(pygame.sprite.Sprite):
             'right': self.get_images(64),
             'up': self.get_images(96)
         }
-        self.old_speed = 2
-        self.speed = self.old_speed
+        self.speed = speed
+
+    def change_status(self, status):
+        self.sprite_sheet = pygame.image.load(f'..\images\sprites\{self.name}\{status}.png').convert_alpha()
+        self.status = status
 
     def change_animation(self, name):
         self.image = self.images[name][self.animation_index]

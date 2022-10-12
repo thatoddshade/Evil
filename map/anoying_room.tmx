@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="24" height="32" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="15">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="24" height="32" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="16">
  <tileset firstgid="1" source="house.tsx"/>
  <tileset firstgid="1551" source="iceset.tsx"/>
  <tileset firstgid="2271" source="dungeon.tsx"/>
@@ -157,6 +157,7 @@
   <object id="7" type="collision" x="176" y="272" width="16" height="240"/>
   <object id="8" name="exit_anoying_room" x="83" y="472" width="27" height="40"/>
   <object id="9" type="collision" x="16" y="496" width="160" height="16"/>
+  <object id="15" type="subscribe_button" x="192" y="267" width="107" height="37"/>
  </objectgroup>
  <objectgroup id="5" name="NPCPaths">
   <object id="10" name="wassa_path1" x="120" y="304" width="16" height="16"/>
