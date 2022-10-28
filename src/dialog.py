@@ -6,12 +6,7 @@ import settings
 class DialogBox:
     def __init__(self, player):
         self.player = player
-        self.box = pygame.Rect(
-            settings.DIALOG_BOX_X_POSITION,
-            settings.DIALOG_BOX_Y_POSITION,
-            settings.DIALOG_BOX_WIDTH,
-            settings.DIALOG_BOX_HEIGHT
-        )
+        self.box = pygame.image.load("../images/gui/dialog_box.png")
         self.texts = []
         self.text_index = 0
         self.letter_index = 0
@@ -36,21 +31,21 @@ class DialogBox:
             self.letter_index += math.ceil(1 * settings.delta_time)
             if self.letter_index >= len(self.texts[self.text_index]):
                 self.letter_index = self.letter_index
-
+            screen.blit(
+                pygame.transform.scale(
+                    self.box,
+                    (
+                        settings.DIALOG_BOX_WIDTH, settings.DIALOG_BOX_HEIGHT
+                    ),
+                ),
+                (
+                    settings.DIALOG_BOX_X_POSITION * 0.75,
+                    settings.DIALOG_BOX_Y_POSITION
+                )
+            )
             # display the portrait, if the character has one
             if "portrait" in settings.sprite_data[self.texts[self.text_index][0]]:
                 if settings.sprite_data[self.texts[self.text_index][0]]["portrait"]:
-                    pygame.draw.rect(
-                        screen,
-                        settings.DIALOG_BOX_COLOR,
-                        pygame.Rect(
-                            settings.DIALOG_PORTRAIT_X_POSITION,
-                            settings.DIALOG_PORTRAIT_Y_POSITION,
-                            settings.DIALOG_BOX_WIDTH,
-                            settings.DIALOG_BOX_HEIGHT
-                        ),
-                        0, 15, -1, 0, 0, 0
-                    )
                     screen.blit(
                         pygame.transform.scale(
                             pygame.image.load(
@@ -67,14 +62,6 @@ class DialogBox:
                             settings.HEIGHT - settings.DIALOG_BOX_HEIGHT * 0.96
                         )
                     )
-
-            # display the dialog box
-            pygame.draw.rect(
-                screen,
-                settings.DIALOG_BOX_COLOR,
-                self.box,
-                0, 15, -1, -1, 0, 0
-            )
 
             # display the previous text
             if self.text_index > 0:
