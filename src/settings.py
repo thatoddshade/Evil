@@ -5,11 +5,7 @@ __credits__ = {
     "Omegatomic": "Music",
     "Guytou": "kind of weird but inspiring ideas..."
 }
-__license__ = "MPL"
 __version__ = "0.0a3"
-__maintainer__ = "Shad0w_57"
-__email__ = ""
-__status__ = "Production"
 
 
 # general setup
@@ -167,13 +163,21 @@ It is rare and naturally has a golden yellow color."""
 
     "copper_ingot": {
         "name": "Copper Ingot", "max_stack": default_max_stack, "lore":
-        """Copper is a golden red metal,
-but it is a very good conductor of electricity."""
+        """Golden red metal, very good conductor of electricity."""
     },
     "raw_copper": {
         "name": "Raw Copper", "max_stack": default_max_stack, "lore":
         """To Minecraft players:
 Copper is far more useful than you think."""
+    },
+
+    "dark_steel_ingot": {
+        "name": "Dark Steel Ingot", "max_stack": default_max_stack, "lore":
+        """This weird gloomy ingot is really hard..."""
+    },
+    "raw_dark_steel": {
+        "name": "Raw Sark Steel", "max_stack": default_max_stack, "lore":
+        """It is not a regular pebble at all."""
     },
 
     "potato": {

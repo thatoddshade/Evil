@@ -31,8 +31,6 @@ class Game:
         print("|____     \/     _|_    |___")
         print('\n(*° ω °*)')
 
-        print(len(item_data))
-
         pygame.mouse.set_visible(False)
 
         # generate a player
