@@ -5,11 +5,7 @@ __credits__ = {
     "Omegatomic": "Music",
     "Guytou": "kind of weird but inspiring ideas..."
 }
-__license__ = "MPL"
 __version__ = "0.0a3"
-__maintainer__ = "Shad0w_57"
-__email__ = ""
-__status__ = "Production"
 
 
 # general setup
