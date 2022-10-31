@@ -1,11 +1,10 @@
-__author__ = "Shad0w_57"
-__copyright__ = ""
-__credits__ = {
+credits = {
     "Shad0w_57": "Programming, Designing and Graphics",
     "Omegatomic": "Music",
+    "Sushy": "Music and useless things",
     "Guytou": "kind of weird but inspiring ideas..."
 }
-__version__ = "0.0a3"
+version = "0.0a3"
 
 
 # general setup
