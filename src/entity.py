@@ -97,7 +97,7 @@ class Player(Entity):
         ]
 
 
-class Item(Entity):
+class ItemSprite(Entity):
     def __init__(self, x, y, status):
         super().__init__("items", x, y)
         # graphic setup

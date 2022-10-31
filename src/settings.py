@@ -176,7 +176,7 @@ Copper is far more useful than you think."""
         """This weird gloomy ingot is really hard..."""
     },
     "raw_dark_steel": {
-        "name": "Raw Sark Steel", "max_stack": default_max_stack, "lore":
+        "name": "Raw Dark Steel", "max_stack": default_max_stack, "lore":
         """It is not a regular pebble at all."""
     },
 
