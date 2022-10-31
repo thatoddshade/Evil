@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from entity import NPC, Item
+from entity import NPC, ItemSprite
 from particle import Particle
 import settings
 import pygame
@@ -25,7 +25,7 @@ class Map:
     tmx_data: pytmx.TiledMap
     portals: list[Portal]
     npcs: list[NPC]
-    items: list[Item]
+    items: list[ItemSprite]
 
 
 class MapManager:
@@ -78,7 +78,7 @@ class MapManager:
 
         # items
         for sprite in self.get_group().sprites():
-            if type(sprite) is Item:
+            if type(sprite) is ItemSprite:
                 # get the distance and the direction
                 distance = sprite.get_distance_direction(
                     self.player
@@ -123,7 +123,7 @@ class MapManager:
                         pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                     )
                 if properties["class"] == "item":
-                    items.append(Item(obj.x, obj.y, obj.name))
+                    items.append(ItemSprite(obj.x, obj.y, obj.name))
 
             elif "type" in properties:
                 if properties["type"] == "collision":
@@ -131,7 +131,7 @@ class MapManager:
                         pygame.Rect(obj.x, obj.y, obj.width, obj.height)
                     )
                 if properties["type"] == "item":
-                    items.append(Item(obj.x, obj.y, obj.name))
+                    items.append(ItemSprite(obj.x, obj.y, obj.name))
 
         # draw the layer group and add elements to group
         group = pyscroll.PyscrollGroup(
@@ -176,7 +176,7 @@ class MapManager:
         for npc in self.get_map().npcs:
             npc.move_to_next_point()
         for sprite in self.get_group().sprites():
-            if type(sprite) is not Item:
+            if type(sprite) is not ItemSprite:
                 if hasattr(sprite, "direction"):
                     if sprite.direction[0] * sprite.speed != 0 or sprite.direction[1] * sprite.speed != 0:
                         if random.choice([True, False]):
