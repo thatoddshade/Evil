@@ -9,7 +9,7 @@ class Particle(AnimateSprite):
         super().__init__("particles", x, y)
         # graphic setup
         self.width, self.height = 16, 16
-        self.change_status(status)
+        self.change_path(status)
         self.image = self.get_image(00, 00).convert_alpha()
         self.image.set_colorkey([0, 0, 0])
         self.rect = self.image.get_rect()

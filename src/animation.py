@@ -27,7 +27,7 @@ class AnimateSprite(pygame.sprite.Sprite):
         for group in self.groups():
             group.change_layer(self, layer)
 
-    def change_status(self, status):
+    def change_path(self, status):
         self.sprite_sheet = pygame.image.load(
             f'../images/sprites/{self.name}/{status}.png'
         )

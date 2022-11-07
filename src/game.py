@@ -31,7 +31,11 @@ class Game:
         print("|____     \/     _|_    |___")
         print('\n(*° ω °*)')
 
-        pygame.mouse.set_visible(False)
+        # custom mouse cursor
+        surf = pygame.image.load('../images/cursor.png').convert_alpha()
+        cursor = pygame.cursors.Cursor((0, 0), surf)
+        pygame.mouse.set_cursor(cursor)
+
 
         # generate a player
         self.player = Player()
@@ -49,6 +53,7 @@ class Game:
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
+
         # movement
         if self.player.direction.magnitude() != 0:
             self.player.direction = self.player.direction.normalize()
@@ -115,14 +120,6 @@ class Game:
             str(pygame.mouse.get_pos()),
             pygame.mouse.get_pos()[0] + 16,
             pygame.mouse.get_pos()[1] + 16
-        )
-
-        # display custom mouse pointer
-        mouse_pos = pygame.mouse.get_pos()
-        self.display.blit(
-            pygame.transform.scale(
-                pygame.image.load('../images/cursor.png'),
-                (random.randint(30, 34), random.randint(30, 34))), mouse_pos
         )
 
     def run(self):

@@ -7,7 +7,7 @@
         {
             "type": "python",
             "request": "launch",
-            "name": "Python: Main File",
+            "name": "Main File",
             "cwd": "${workspaceFolder}\\src",
             "program": "${workspaceFolder}\\src\\main.py"
         }

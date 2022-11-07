@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from entity import NPC, ItemSprite
+from entity import NPC
+from item import ItemSprite
 from particle import Particle
 import settings
 import pygame
 import pytmx
 import pyscroll
-import math
 import random
 
 
@@ -36,8 +36,18 @@ class MapManager:
         self.current_map = "village"
 
         self.register_map("village", portals=[], npcs=[
-            NPC("umbra", nb_points=4, dialog=[["player", "Hello ! "], ["player", "How are you feeling ? Who are you ? What is your name ?"], ["umbra", "Not fine at all."], ["umbra", "I am someone..."], ["umbra", "I am someone who hasn't any soul."], ["umbra", "But I can read in souls."], ["umbra", "My name is written on the top-left of the dialog box."], ["player", "whot's a dialog box ?"]], speed=2, portrait=True),
-            NPC("wassa", nb_points=1, dialog=[["player", "Bonjour."], ["umbra", "Salue."], ["cooper", "Hola."], ["umbra", "Buongiorno."], ["wassa", "Gutentag."], ["umbra", "Hello."]], speed=2, portrait=True)
+            NPC("umbra", nb_points=4, dialog=[["player", "Hello ! "], ["player",
+                "How are you feeling ? Who are you ? What is your name ?"],
+                ["umbra", "Not fine at all."], ["umbra", "I am someone..."],
+                ["umbra", "I am someone who hasn't any soul."],
+                ["umbra", "But I can read in souls."],
+                ["umbra", "My name is written on the top-left of the dialog box."],
+                ["player", "whot's a dialog box ?"]], speed=2, portrait=True),
+
+            NPC("wassa", nb_points=1, dialog=[["player", "Bonjour."],
+                ["umbra", "Salue."], ["cooper", "Hola."],
+                ["umbra", "Buongiorno."], ["wassa", "Gutentag."],
+                ["umbra", "Hello."]], speed=2, portrait=True)
         ])
 
         self.teleport_player("player")
