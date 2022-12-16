@@ -8,8 +8,8 @@
             "type": "python",
             "request": "launch",
             "name": "Main File",
-            "cwd": "${workspaceFolder}\\src",
-            "program": "${workspaceFolder}\\src\\main.py"
+            "cwd": "${workspaceFolder}",
+            "program": "${workspaceFolder}\\main.py"
         }
     ]
 }

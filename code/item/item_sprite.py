@@ -4,13 +4,6 @@ import pygame
 import settings
 
 
-@dataclass
-class Item:
-    name: str
-    max_stack: int
-    lore: str
-
-
 class ItemSprite(Entity):
     def __init__(self, x, y, status):
         super().__init__("items", x, y)

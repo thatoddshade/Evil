@@ -1,0 +1,14 @@
+{
+    "window_width": 1280,
+    "window_height": 720,
+    "display_width": 640,
+    "display_height": 360,
+    "fullscreen": false,
+    "max_fps": 256,
+    "key_up": "pygame.K_z",
+    "key_left": "pygame.K_q",
+    "key_down": "pygame.K_s",
+    "key_right": "pygame.K_d",
+    "key_main_button": "pygame.BUTTON_LEFT",
+    "key_secondary_button": "pygame.BUTTON_RIGHT"
+}
