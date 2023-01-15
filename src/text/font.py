@@ -1,21 +1,28 @@
 import pygame
-from ... import support
+from ..support import clip
+
+pygame.init()
+
+character_order = open("character_order.txt", "r").read()
 
 
 class Font:
-    def __init__(self, path):
-        self.spacing = 1
+    def __init__(self, path, spacing=1):
+        self.spacing = spacing
+        self.character_order = character_order
+        print(self.character_order)
 
-        self.character_order = open("character_order.txt", "r").read()
+        font_img = pygame.image.load(path)
+        font_img.set_colorkey((0, 0, 0))
 
-        font_img = pygame.image.load(path).convert()
         current_char_width = 0
         self.characters = {}
         character_count = 0
+
         for x in range(font_img.get_width()):
             c = font_img.get_at((x, 0))
             if c[0] == 127:
-                char_img = support.clip(
+                char_img = clip(
                     font_img,
                     x - current_char_width,
                     0,
@@ -39,5 +46,5 @@ class Font:
                 x_offset += self.space_width + self.spacing
 
 
-small_font = Font("../../data/images/font/small_font.png")
-large_font = Font("../../data/images/font/large_font.png")
+small_font = Font("data/images/font/small_font.png")
+large_font = Font("data/images/font/large_font.png")
