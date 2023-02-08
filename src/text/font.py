@@ -10,7 +10,7 @@ class Font:
     def __init__(self, path, spacing=1):
         self.spacing = spacing
         self.character_order = character_order
-        print(self.character_order)
+        # print(self.character_order)
 
         font_img = pygame.image.load(path)
         font_img.set_colorkey((0, 0, 0))
@@ -21,7 +21,7 @@ class Font:
 
         for x in range(font_img.get_width()):
             c = font_img.get_at((x, 0))
-            if c[0] == 127:
+            if c == (127, 127, 127):
                 char_img = clip(
                     font_img,
                     x - current_char_width,
@@ -44,7 +44,3 @@ class Font:
                 x_offset += self.characters[char].get_width() + self.spacing
             else:
                 x_offset += self.space_width + self.spacing
-
-
-small_font = Font("data/images/font/small_font.png")
-large_font = Font("data/images/font/large_font.png")

@@ -1,0 +1,17 @@
+import pygame
+
+
+class Entity(pygame.sprite.Sprite):
+    def __init__(self, pos, surf, groups):
+        super().__init__(groups)
+        self.image = surf
+        self.image.set_colorkey((0, 0, 0))
+        self.rect = self.image.get_rect(topleft=pos)
+
+
+class Player(Entity):
+    def __init__(self, image_path, pos, groups):
+        super.__init__(groups)
+        self.image = pygame.image.load(image_path)
+        self.image.set_colorkey((0, 0, 0))
+        self.position = pos
