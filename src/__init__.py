@@ -1,5 +1,5 @@
-from . import text
-from . import support
+# from . import text
+from . import utils
 from . import map
 from . import options
 from . import tile

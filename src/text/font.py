@@ -1,5 +1,5 @@
 import pygame
-from ..support import clip
+from ..utils import clip
 
 pygame.init()
 

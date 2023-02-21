@@ -1,12 +1,17 @@
 # general setup
-import pygame, pytmx, pyscroll, sys
-import src
+import pygame, pytmx, pyscroll, sys, math, src
 
 clock = pygame.time.Clock()
 pygame.init()  # initiate pygame
 
 # import settings
-from src.options.dictionary import options
+from src.options.dictionary import option_dict as options
+
+# initialize game controller
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())]
+for joystick in joysticks:
+    print(joystick.get_name())
 
 surf_size = (options["window_width"], options["window_height"])
 window_size = (options["window_width"], options["window_height"])
@@ -17,13 +22,17 @@ display_size = (
 monitor_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 
 # make a window
-screen = pygame.display.set_mode(surf_size, pygame.RESIZABLE)
+if options.get("fullscreen", False):
+    screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+else:
+    screen = pygame.display.set_mode(surf_size, pygame.RESIZABLE)
 pygame.display.set_caption("Evil")  # set the window title
 
 # make a surface used for rendering
 display = pygame.Surface(display_size)
+display.set_colorkey("#000000")
 
-fullscreen = False
+# fullscreen = False
 
 # set icon
 icon = pygame.image.load("data/images/icon.png")
@@ -36,66 +45,106 @@ cursor = pygame.cursors.Cursor((0, 0), pygame.transform.scale(cursor_img, (32, 3
 pygame.mouse.set_cursor(cursor)
 
 # load map
-tmx_data = pytmx.util_pygame.load_pygame("data/map/village.tmx")
-map_data = pyscroll.data.TiledMapData(tmx_data)
+map_data = src.map.load_map("data/map/village.tmx", display_size)
 map_layer = pyscroll.orthographic.BufferedRenderer(map_data, display_size)
 map_layer.zoom = 2
 
-group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=1)
+group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=3)
 
+# load fonts
+# small_font = src.text.font.Font("data/images/font/small_font.png")
+# large_font = src.text.font.Font("data/images/font/large_font.png")
 
-small_font = src.text.font.Font("data/images/font/small_font.png")
-large_font = src.text.font.Font("data/images/font/large_font.png")
-
-# player = src.entity.Player("data/images/sprite/player/moving.png", (100, 100, group))
+# intialise player
+entity = src.entity.Entity((100, 100), "data/images/sprite/player/moving.png", group)
+player = src.entity.Player((100, 100), group)
 
 running = True
 while running:  # game loop
+    src.utils.update_delta_time()
     mouse_pos = pygame.mouse.get_pos()
 
+    # update
     for event in pygame.event.get():  # event loop
         if event.type is pygame.QUIT:  # check for window quit
             running = False  # stop game loop
 
+        if event.type == pygame.JOYAXISMOTION:
+            # print(event)
+            # pass
+            if event.axis < 2:
+                player.direction[event.axis] = event.value
+        if event.type == pygame.JOYDEVICEADDED:
+            joysticks = [
+                pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())
+            ]
+        if event.type == pygame.JOYDEVICEREMOVED:
+            joysticks = [
+                pygame.joystick.Joystick(i) for i in range(pygame.joystick.get_count())
+            ]
+
         if event.type == pygame.KEYDOWN:
-            print(event.key)
+            # print(event.key)
             if event.key == pygame.K_ESCAPE:
                 running = False  # stop game loop
 
-            if event.key == pygame.K_F11:
-                fullscreen = not fullscreen
-            if fullscreen:
-                screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
-            else:
-                screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
+            # if event.key == pygame.K_F11:
+            #     fullscreen = not fullscreen
+            # if fullscreen:
+            #     screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+            # else:
+            #     screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
 
-        if event.type is pygame.VIDEORESIZE:
-            if not fullscreen:
-                window_size = (event.w, event.h)
-                screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
+        # if event.type is pygame.VIDEORESIZE:
+        #     if not fullscreen:
+        #         window_size = (event.w, event.h)
+        #         screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
+
+    player.handle_input(src.utils.delta_time)
 
     # display stuff
-    display.fill(options["background_color"])  # fill screen
+    screen.fill(options["background_color"])  # fill screen
 
     group.draw(display)
-    group.center(mouse_pos)
+    # group.center(mouse_pos)
+    group.center(player.rect)
 
     # large_font.render(display, "ABCD", (32, 32))
     # small_font.render(display, "ABCD", (48, 48))
     # pygame.draw.rect(display, "#ffffff", (64, 64, 1, 1))
 
     display_size = (
-        screen.get_height() * 2,
+        screen.get_height() * (options["window_width"] / options["window_height"]),
         screen.get_height(),
     )
-    display_pos = ((screen.get_width() - (screen.get_height() * 2)) / 2, 0)
+    display_pos = ((screen.get_width() - display_size[0]) / 2, 0)
 
     screen.blit(
         pygame.transform.scale(display, display_size),
         display_pos,
     )
+
+    # get font
+    sys_font = pygame.font.Font(None, 32)
+
+    # create some text
+    debug_surf = sys_font.render(
+        str(math.ceil(clock.get_fps())) + " FPS", False, (255, 255, 255)
+    )
+
+    # create a rect with a pos
+    debug_rect = debug_surf.get_rect(topleft=(10, 10))
+
+    # blit all of that
+    pygame.draw.rect(screen, "#2e222f", debug_rect, 0, 4)
+    screen.blit(debug_surf, debug_rect)
+
+    pygame.display.set_caption(
+        "Evil" + " - " + str(math.ceil(clock.get_fps())) + " FPS"
+    )
+
     pygame.display.update()  # update screen
-    clock.tick(60)
+    clock.tick()
 
 pygame.quit()  # stop pygame
 sys.exit()  # exit
