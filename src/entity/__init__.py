@@ -30,8 +30,8 @@ class Entity(pygame.sprite.Sprite):
 
         # print(self.direction.x * self.speed * delta_time, self.direction.y * self.speed * delta_time)
 
-        self.rect[0] += self.direction.x * self.speed * delta_time
-        self.rect[1] += self.direction.y * self.speed * delta_time
+        self.rect[0] += self.direction.x * self.speed  # * delta_time
+        self.rect[1] += self.direction.y * self.speed  # * delta_time
 
 
 class Player(Entity):
