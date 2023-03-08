@@ -1,8 +1,7 @@
 # general setup
-import pygame, pytmx, pyscroll, sys, math, src
+import pygame, pytmx, pyscroll, sys, math, src, pygame_shaders
 
-clock = pygame.time.Clock()
-pygame.init()  # initiate pygame
+pygame.init()
 
 # import settings
 from src.options.dictionary import option_dict as options
@@ -21,18 +20,27 @@ display_size = (
 )
 monitor_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 
-# make a window
+# setup a window and a rendering surface
 if options.get("fullscreen", False):
-    screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN)
+    screen = pygame.display.set_mode(monitor_size, pygame.FULLSCREEN | pygame.OPENGL)
 else:
-    screen = pygame.display.set_mode(surf_size, pygame.RESIZABLE)
-pygame.display.set_caption("Evil")  # set the window title
+    screen = pygame.display.set_mode(surf_size, pygame.RESIZABLE | pygame.OPENGL)
 
-# make a surface used for rendering
 display = pygame.Surface(display_size)
-display.set_colorkey("#000000")
+display.set_colorkey((0, 0, 0))
 
-# fullscreen = False
+screen_shader = pygame_shaders.Shader(
+    window_size,
+    window_size,
+    (0, 0),
+    "shaders/vertex.glsl",
+    "shaders/fragment.glsl",
+    screen,
+)
+
+clock = pygame.time.Clock()
+
+pygame.display.set_caption("Evil")  # set the window title
 
 # set icon
 icon = pygame.image.load("data/images/icon.png")
@@ -55,9 +63,10 @@ group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=3)
 # small_font = src.text.font.Font("data/images/font/small_font.png")
 # large_font = src.text.font.Font("data/images/font/large_font.png")
 
-# intialise player
-entity = src.entity.Entity((100, 100), "data/images/sprite/player/moving.png", group)
+# load player
 player = src.entity.Player((100, 100), group)
+# tmp :
+entity = src.entity.Entity((100, 100), "data/images/sprite/player/moving.png", group)
 
 running = True
 while running:  # game loop
@@ -70,8 +79,6 @@ while running:  # game loop
             running = False  # stop game loop
 
         if event.type == pygame.JOYAXISMOTION:
-            # print(event)
-            # pass
             if event.axis < 2:
                 player.direction[event.axis] = event.value
         if event.type == pygame.JOYDEVICEADDED:
@@ -84,7 +91,6 @@ while running:  # game loop
             ]
 
         if event.type == pygame.KEYDOWN:
-            # print(event.key)
             if event.key == pygame.K_ESCAPE:
                 running = False  # stop game loop
 
@@ -103,7 +109,8 @@ while running:  # game loop
     player.handle_input(src.utils.delta_time)
 
     # display stuff
-    screen.fill(options["background_color"])  # fill screen
+    pygame_shaders.clear((options["background_color"]))
+    screen.fill(options["background_color"])
 
     group.draw(display)
     # group.center(mouse_pos)
@@ -124,26 +131,21 @@ while running:  # game loop
         display_pos,
     )
 
-    # get font
-    sys_font = pygame.font.Font(None, 32)
-
-    # create some text
-    debug_surf = sys_font.render(
-        str(math.ceil(clock.get_fps())) + " FPS", False, (255, 255, 255)
-    )
-
-    # create a rect with a pos
-    debug_rect = debug_surf.get_rect(topleft=(10, 10))
-
-    # blit all of that
-    pygame.draw.rect(screen, "#2e222f", debug_rect, 0, 4)
-    screen.blit(debug_surf, debug_rect)
-
+    # show fps
+    # sys_font = pygame.font.Font(None, 32)
+    # debug_surf = sys_font.render(
+    #     str(math.ceil(clock.get_fps())) + " FPS", False, (255, 255, 255)
+    # )
+    # debug_rect = debug_surf.get_rect(topleft=(10, 10))
+    # pygame.draw.rect(screen, "#2e222f", debug_rect, 0, 4)
+    # screen.blit(debug_surf, debug_rect)
     pygame.display.set_caption(
         "Evil" + " - " + str(math.ceil(clock.get_fps())) + " FPS"
     )
 
-    pygame.display.update()  # update screen
+    screen_shader.render(screen)
+
+    pygame.display.flip()  # update screen
     clock.tick()
 
 pygame.quit()  # stop pygame

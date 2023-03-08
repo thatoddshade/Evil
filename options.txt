@@ -5,7 +5,7 @@
     "display_height": 360,
     "fullscreen": false,
     "max_fps": 256,
-    "background_color": "#2e222f",
+    "background_color": [46, 34, 47],
     "key_up": "pygame.K_z",
     "key_left": "pygame.K_q",
     "key_down": "pygame.K_s",
